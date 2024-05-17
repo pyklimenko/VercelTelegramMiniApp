@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const tg = window.Telegram.WebApp;
+            const firstName = tg.initDataUnsafe.user.first_name;
+            const lastName = tg.initDataUnsafe.user.last_name;
+
+            document.getElementById('firstName').textContent = firstName;
+            document.getElementById('lastName').textContent = lastName;
+
+            fetch(`/api/getUserName?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! ??? Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.userName) {
+                        document.getElementById('userName').textContent = data.userName;
+                    } else {
+                        document.getElementById('userName').textContent = 'User not found';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('userName').textContent = 'Error fetching user data !!!';
+                });
+
+            // Apply theme parameters
+            const themeParams = tg.themeParams;
+            if (themeParams.bg_color) {
+                document.documentElement.style.setProperty('--bg-color', themeParams.bg_color);
+            }
+            if (themeParams.text_color) {
+                document.documentElement.style.setProperty('--text-color', themeParams.text_color);
+            } else {
+                const defaultTextColor = themeParams.bg_color === '#ffffff' ? '#000000' : '#ffffff';
+                document.documentElement.style.setProperty('--text-color', defaultTextColor);
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Telegram Mini App</h1>
+    <p>Ваше имя: <span id="firstName"></span></p>
+    <p>Ваша фамилия: <span id="lastName"></span></p>
+    <p>Ваш UserName: <span id="userName"></span></p>
+</body>
+</html>
