@@ -14,7 +14,7 @@ let db;
 async function connectToDatabase() {
     client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
-    db = client.db('studentssrades');
+    db = client.db('Marhi');
     console.log('Connected to MongoDB');
 }
 
