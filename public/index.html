@@ -13,20 +13,22 @@
             const lastName = tg.initDataUnsafe.user.last_name;
 
             document.getElementById('firstName').textContent = firstName;
-            document.getElementById('lastName').textContent = lastName;
 
             fetch(`/api/getUserName?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.message) {
-                        document.getElementById('userMessage').textContent = data.message;
-                        if (data.datesAttended) {
-                            const datesList = data.datesAttended.join(', ');
-                            document.getElementById('datesAttended').textContent = datesList;
+                    let userMessage;
+                    if (data.found) {
+                        const atCount = data.atCount;
+                        if (atCount === 0) {
+                            userMessage = "У вас нет ни одного посещения.";
+                        } else {
+                            userMessage = `Вы посетили занятия ${atCount} раз.`;
                         }
                     } else {
-                        document.getElementById('userMessage').textContent = 'Error fetching user data';
+                        userMessage = "Не смог найти тебя в базе";
                     }
+                    document.getElementById('userMessage').textContent = userMessage;
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -50,8 +52,6 @@
 <body>
     <h1>CDCat Mini App</h1>
     <p>Привет, <span id="firstName"></span>!</p>
-    <p>Ты находишься в приложении для </p>
     <p id="userMessage"></p>
-    <p>Посещения: <span id="datesAttended"></span></p>
 </body>
 </html>

@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.get('/api/getUserName', async (req, res) => {
     const { firstName, lastName } = req.query;
     if (!firstName || !lastName) {
-        return res.status(400).send('First name and last name are required Test');
+        return res.status(400).send('First name and last name are required');
     }
 
     try {
@@ -35,13 +35,13 @@ app.get('/api/getUserName', async (req, res) => {
         if (user) {
             const datesAttended = user.datesAttended || [];
             const atCount = datesAttended.length;
-            res.json({ message: `Нашел тебя в базе, ты посетил ${atCount} занятий.`, datesAttended });
+            res.json({ found: true, atCount });
         } else {
-            res.status(404).json({ message: 'Не смог найти тебя в базе' });
+            res.status(404).json({ found: false });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error Test');
+        res.status(500).send('Internal Server Error');
     }
 });
 
