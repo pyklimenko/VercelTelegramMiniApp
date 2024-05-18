@@ -1,0 +1,32 @@
+// getUser.js
+const { connectToDatabase } = require('./db');
+
+module.exports = async (req, res) => {
+    const { firstName, lastName } = req.query;
+
+    if (!firstName || !lastName) {
+        return res.status(400).send('First name and last name are required');
+    }
+
+    try {
+        const db = await connectToDatabase();
+
+        const collection = db.collection('Students');
+        const user = await collection.findOne({ firstName, lastName });
+
+        console.log('Database query result:', user);
+
+        if (user) {
+            const datesAttended = user.datesAttended || [];
+            const atCount = datesAttended.length;
+            console.log('User found, attendance count:', atCount);
+            res.json({ found: true, atCount });
+        } else {
+            console.log('User not found');
+            res.status(404).json({ found: false });
+        }
+    } catch (error) {
+        console.error('Database query error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};

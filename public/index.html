@@ -32,10 +32,10 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.getElementById('userMessage').textContent = 'Error fetching user data';
+                    document.getElementById('userMessage').textContent = 'Ошибка при получении данных пользователя';
                 });
 
-            // Apply theme parameters
+            // Применение параметров темы
             const themeParams = tg.themeParams;
             if (themeParams.bg_color) {
                 document.documentElement.style.setProperty('--bg-color', themeParams.bg_color);
