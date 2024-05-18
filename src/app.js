@@ -6,7 +6,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://petrklimenko:SgxG1AwKCq9FLgnG@studentsgrades.fhxjnip.mongodb.net/?retryWrites=true&w=majority&appName=StudentsGrades';
+const uri = process.env.MONGODB_URI;
 
 let client;
 let db;
