@@ -33,9 +33,11 @@ app.get('/api/getUserName', async (req, res) => {
         const user = await collection.findOne({ firstName, lastName });
         
         if (user) {
-            res.json({ userName: user.userName });
+            const datesAttended = user.datesAttended || [];
+            const atCount = datesAttended.length;
+            res.json({ message: `Нашел тебя в базе, ты посетил ${atCount} занятий.`, datesAttended });
         } else {
-            res.status(404).json({ message: 'User not found Test' });
+            res.status(404).json({ message: 'Не смог найти тебя в базе' });
         }
     } catch (error) {
         console.error(error);

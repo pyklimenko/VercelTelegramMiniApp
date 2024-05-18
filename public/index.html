@@ -16,22 +16,21 @@
             document.getElementById('lastName').textContent = lastName;
 
             fetch(`/api/getUserName?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! ??? Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    if (data.userName) {
-                        document.getElementById('userName').textContent = data.userName;
+                    if (data.message) {
+                        document.getElementById('userMessage').textContent = data.message;
+                        if (data.datesAttended) {
+                            const datesList = data.datesAttended.join(', ');
+                            document.getElementById('datesAttended').textContent = datesList;
+                        }
                     } else {
-                        document.getElementById('userName').textContent = 'User not found';
+                        document.getElementById('userMessage').textContent = 'Error fetching user data';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.getElementById('userName').textContent = 'Error fetching user data !!!';
+                    document.getElementById('userMessage').textContent = 'Error fetching user data';
                 });
 
             // Apply theme parameters
@@ -49,9 +48,10 @@
     </script>
 </head>
 <body>
-    <h1>Telegram Mini App</h1>
-    <p>Ваше имя: <span id="firstName"></span></p>
-    <p>Ваша фамилия: <span id="lastName"></span></p>
-    <p>Ваш UserName: <span id="userName"></span></p>
+    <h1>CDCat Mini App</h1>
+    <p>Привет, <span id="firstName"></span>!</p>
+    <p>Ты находишься в приложении для </p>
+    <p id="userMessage"></p>
+    <p>Посещения: <span id="datesAttended"></span></p>
 </body>
 </html>
