@@ -6,6 +6,13 @@
     <title>Telegram Mini App</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <h1>CDCat Mini App</h1>
+    <p id="userGreeting"></p> <!-- Элемент для приветствия -->
+    <p id="userMessage"></p>
+    <ul id="datesAttendedList"></ul>
+
     <script>
         // Функция для преобразования даты
         function formatDate(dateStr) {
@@ -15,18 +22,33 @@
             const date = new Date(year, month - 1, day);
 
             const options = { day: 'numeric', month: 'long', weekday: 'long' };
-            return date.toLocaleDateString('ru-RU', options);
+            const formattedDate = date.toLocaleDateString('ru-RU', options);
+            
+            // Переставляем части даты
+            const [weekday, dayMonth] = formattedDate.split(', ');
+            return `${dayMonth}, ${weekday}`;
         }
 
         window.addEventListener('DOMContentLoaded', (event) => {
             const tg = window.Telegram.WebApp;
+            console.log("Telegram WebApp инициализирован", tg);
+
             const firstName = tg.initDataUnsafe.user.first_name;
             const lastName = tg.initDataUnsafe.user.last_name;
+            console.log("Имя пользователя:", firstName, lastName);
+
+            // Установка приветственного сообщения
+            const userGreeting = document.getElementById('userGreeting');
+            if (userGreeting) {
+                userGreeting.textContent = `Привет, ${firstName}!`;
+            }
 
             fetch(`/api/getUser?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
                 .then(response => response.json())
                 .then(data => {
-                    let userMessage = `Привет, ${firstName}!\n`;
+                    console.log("Получены данные пользователя:", data);
+
+                    let userMessage = '';
                     const datesList = document.getElementById('datesAttendedList');
                     datesList.innerHTML = ''; // Очищаем список перед добавлением новых элементов
 
@@ -36,13 +58,13 @@
                         const taskInfo = data.taskInfo;
                         const scores = data.scores.join(', ');
 
-                        userMessage += `Твоё задание: ${taskInfo}\n`;
-                        userMessage += `Твои оценки: ${scores}\n`;
+                        userMessage += `Твоё задание: ${taskInfo}<br>`;
+                        userMessage += `Твои оценки: ${scores}<br>`;
 
                         if (atCount === 0) {
                             userMessage += "У вас нет ни одного посещения.";
                         } else {
-                            userMessage += `Ты посетил занятия ${atCount} раз.\n`;
+                            userMessage += `Ты посетил занятия ${atCount} раз.<br>`;
                             userMessage += `Твои посещения:`;
 
                             datesAttended.forEach(date => {
@@ -55,10 +77,11 @@
                     } else {
                         userMessage += "Не смог найти тебя в базе";
                     }
-                    document.getElementById('userMessage').textContent = userMessage;
+                    console.log("Формируемое сообщение:", userMessage);
+                    document.getElementById('userMessage').innerHTML = userMessage; // Используем innerHTML вместо textContent
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Ошибка при получении данных пользователя:', error);
                     document.getElementById('userMessage').textContent = 'Ошибка при получении данных пользователя';
                 });
 
@@ -75,10 +98,5 @@
             }
         });
     </script>
-</head>
-<body>
-    <h1>CDCat Mini App</h1>
-    <p id="userMessage"></p>
-    <ul id="datesAttendedList"></ul>
 </body>
 </html>
