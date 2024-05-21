@@ -10,7 +10,6 @@ module.exports = async (req, res) => {
 
     try {
         const db = await connectToDatabase();
-
         const collection = db.collection('Students');
         const user = await collection.findOne({ firstName, lastName });
 
@@ -18,9 +17,17 @@ module.exports = async (req, res) => {
 
         if (user) {
             const datesAttended = user.datesAttended || [];
-            const atCount = datesAttended.length;
-            console.log('User found, attendance count:', atCount);
-            res.json({ found: true, atCount });
+            const taskInfo = user.taskInfo || "Отсутствует информация о задании.";
+            const scores = user.scores || [];
+
+            console.log('Пользователь найден');
+            res.json({
+                found: true,
+                atCount: datesAttended.length,
+                datesAttended,
+                taskInfo,
+                scores
+            });
         } else {
             console.log('User not found');
             res.status(404).json({ found: false });

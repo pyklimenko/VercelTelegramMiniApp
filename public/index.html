@@ -18,13 +18,28 @@
                 .then(response => response.json())
                 .then(data => {
                     let userMessage;
+                    const datesList = document.getElementById('datesAttendedList');
+                    datesList.innerHTML = ''; // Очищаем список перед добавлением новых элементов
+
                     if (data.found) {
                         const atCount = data.atCount;
+                        const datesAttended = data.datesAttended;
+                        const taskInfo = data.taskInfo;
+                        const scores = data.scores.join(', ');
+
                         if (atCount === 0) {
                             userMessage = "У вас нет ни одного посещения.";
                         } else {
                             userMessage = `Вы посетили занятия ${atCount} раз.`;
+                            datesAttended.forEach(date => {
+                                const listItem = document.createElement('li');
+                                listItem.textContent = date;
+                                datesList.appendChild(listItem);
+                            });
                         }
+
+                        userMessage += ` Задание: ${taskInfo}. Оценки: ${scores}.`;
+
                     } else {
                         userMessage = "Не смог найти тебя в базе";
                     }
@@ -53,5 +68,6 @@
     <h1>CDCat Mini App</h1>
     <p>Привет, <span id="firstName"></span>!</p>
     <p id="userMessage"></p>
+    <ul id="datesAttendedList"></ul>
 </body>
 </html>
