@@ -23,8 +23,6 @@
             const firstName = tg.initDataUnsafe.user.first_name;
             const lastName = tg.initDataUnsafe.user.last_name;
 
-            document.getElementById('firstName').textContent = firstName;
-
             fetch(`/api/getUser?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
                 .then(response => response.json())
                 .then(data => {
