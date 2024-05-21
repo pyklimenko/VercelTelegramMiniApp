@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // Функция для преобразования даты
+        function formatDate(dateStr) {
+            const [day, month] = dateStr.split('.').map(Number);
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const date = new Date(year, month - 1, day);
+
+            const options = { day: 'numeric', month: 'long', weekday: 'long' };
+            return date.toLocaleDateString('ru-RU', options);
+        }
+
         window.addEventListener('DOMContentLoaded', (event) => {
             const tg = window.Telegram.WebApp;
             const firstName = tg.initDataUnsafe.user.first_name;
@@ -17,7 +28,7 @@
             fetch(`/api/getUser?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
                 .then(response => response.json())
                 .then(data => {
-                    let userMessage;
+                    let userMessage = `Привет, ${firstName}!\n`;
                     const datesList = document.getElementById('datesAttendedList');
                     datesList.innerHTML = ''; // Очищаем список перед добавлением новых элементов
 
@@ -27,19 +38,22 @@
                         const taskInfo = data.taskInfo;
                         const scores = data.scores.join(', ');
 
+                        userMessage += `Твоё задание: ${taskInfo}\n`;
+                        userMessage += `Твои оценки: ${scores}\n`;
+
                         if (atCount === 0) {
-                            userMessage = "У вас нет ни одного посещения.";
+                            userMessage += "У вас нет ни одного посещения.";
                         } else {
-                            userMessage = `Вы посетили занятия ${atCount} раз.`;
+                            userMessage += `Ты посетил занятия ${atCount} раз.\n`;
+                            userMessage += `Твои посещения:`;
+
                             datesAttended.forEach(date => {
+                                const formattedDate = formatDate(date);
                                 const listItem = document.createElement('li');
-                                listItem.textContent = date;
+                                listItem.textContent = `- ${formattedDate}`;
                                 datesList.appendChild(listItem);
                             });
                         }
-
-                        userMessage += ` Задание: ${taskInfo}. Оценки: ${scores}.`;
-
                     } else {
                         userMessage = "Не смог найти тебя в базе";
                     }
@@ -66,7 +80,6 @@
 </head>
 <body>
     <h1>CDCat Mini App</h1>
-    <p>Привет, <span id="firstName"></span>!</p>
     <p id="userMessage"></p>
     <ul id="datesAttendedList"></ul>
 </body>
